@@ -1,7 +1,8 @@
 echo
 echo "this script can run the program through gitbash for windows, or unix terminal for OSX/Linux. It attempts to run through windows first"
 
-echo "checking for numpy, scipy, and scikit"
+echo "checking for pandas,numpy, scipy, and scikit"
+pip3 install pandas
 pip3 install numpy
 pip3 install scipy
 pip3 install scikit-learn
