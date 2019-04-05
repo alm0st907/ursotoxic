@@ -29,7 +29,7 @@ debug_mode = True
 
 def main():
     csvTestLabels = pd.read_csv(testLables) #read in csv
-    # testTuples = (csvTestLabels["id"],csvTestLabels["toxic"],csvTestLabels["obscene"],csvTestLabels["threat"],csvTestLabels["insult"],csvTestLabels["identity_hate"])
+    csvTraining = pd.read_csv(trainData)
 
     IDs = csvTestLabels["id"]
     toxic_status = csvTestLabels["toxic"]
@@ -43,6 +43,19 @@ def main():
 
     for ids,tx,svtx,ob,tr,ins,idh in zip(IDs,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
         parsed_label_data.append((ids,tx,svtx,ob,tr,ins,idh))
+
+    IDs = csvTraining["id"]
+    comments = csvTraining["comment_text"]
+    toxic_status = csvTraining["toxic"]
+    obscene_status = csvTraining["obscene"]
+    threat_status = csvTraining["threat"]
+    insult_status = csvTraining["insult"]
+    identity_hate_status = csvTraining["identity_hate"]
+
+    parsed_train_data = list()
+    for ids,comment,tx,svtx,ob,tr,ins,idh in zip(IDs,comments,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
+        parsed_train_data.append((ids,comment,tx,svtx,ob,tr,ins,idh))
+
     
     #this debug print shows the data if enabled for verification
     if debug_mode:
@@ -53,6 +66,13 @@ def main():
                 break
             i+=1
 
+    if debug_mode:
+        i=0
+        for data in parsed_train_data:
+            print(data,"\n")
+            if i==5:
+                break
+            i+=1
     print()
 
 if __name__ == '__main__':
