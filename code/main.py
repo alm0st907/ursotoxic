@@ -38,20 +38,22 @@ def main():
     threat_status = csvTestLabels["threat"]
     insult_status = csvTestLabels["insult"]
     identity_hate_status = csvTestLabels["identity_hate"]
-
+    
+    #zip data into tuple list of parsed label
     parsed_label_data = list() #parsed out list that contains all the test label data in a list of tuples
-
     for ids,tx,svtx,ob,tr,ins,idh in zip(IDs,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
         parsed_label_data.append((ids,tx,svtx,ob,tr,ins,idh))
 
     IDs = csvTraining["id"]
     comments = csvTraining["comment_text"]
     toxic_status = csvTraining["toxic"]
+    severe_toxic_status = csvTraining["severe_toxic"]
     obscene_status = csvTraining["obscene"]
     threat_status = csvTraining["threat"]
     insult_status = csvTraining["insult"]
     identity_hate_status = csvTraining["identity_hate"]
 
+    #zip training data into list of tuples
     parsed_train_data = list()
     for ids,comment,tx,svtx,ob,tr,ins,idh in zip(IDs,comments,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
         parsed_train_data.append((ids,comment,tx,svtx,ob,tr,ins,idh))
@@ -65,6 +67,7 @@ def main():
             if i == 5:
                 break
             i+=1
+        print()
 
     if debug_mode:
         i=0
@@ -73,7 +76,7 @@ def main():
             if i==5:
                 break
             i+=1
-    print()
+        print()
 
 if __name__ == '__main__':
     main()
