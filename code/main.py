@@ -30,6 +30,7 @@ debug_mode = True
 def main():
     csvTestLabels = pd.read_csv(testLables) #read in csv
     csvTraining = pd.read_csv(trainData)
+    csvTest = pd.read_csv(testData)
 
     IDs = csvTestLabels["id"]
     toxic_status = csvTestLabels["toxic"]
@@ -58,6 +59,14 @@ def main():
     for ids,comment,tx,svtx,ob,tr,ins,idh in zip(IDs,comments,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
         parsed_train_data.append((ids,comment,tx,svtx,ob,tr,ins,idh))
 
+    IDs = csvTest["id"]
+    comments = csvTest["comment_text"]
+
+
+    #zip training data into list of tuples
+    parsed_test_data = list()
+    for ids,comment in zip(IDs,comments):
+        parsed_test_data.append((ids,comment))
     
     #this debug print shows the data if enabled for verification
     if debug_mode:
@@ -72,6 +81,15 @@ def main():
     if debug_mode:
         i=0
         for data in parsed_train_data:
+            print(data,"\n")
+            if i==5:
+                break
+            i+=1
+        print()
+
+    if debug_mode:
+        i=0
+        for data in parsed_test_data:
             print(data,"\n")
             if i==5:
                 break
