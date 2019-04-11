@@ -12,6 +12,14 @@ https://pythonprogramming.net/linear-svc-example-scikit-learn-svm-python/
 
 sci-kit naive bayes blog post with examples
 https://blog.sicara.com/naive-bayes-classifier-sklearn-python-example-tips-42d100429e44
+
+http://www.nltk.org/
+
+https://towardsdatascience.com/machine-learning-nlp-text-classification-using-scikit-learn-python-and-nltk-c52b92a7c73a?gi=a4f8d9daa68b
+
+https://www.analyticsvidhya.com/blog/2015/10/6-practices-enhance-performance-text-classification-model/
+
+http://blog.chapagain.com.np/machine-learning-sentiment-analysis-text-classification-using-python-nltk/
 """
 #imports
 from sklearn import svm
