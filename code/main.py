@@ -107,3 +107,29 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+    #We need to split the data across 7 feature sets
+    #           negfeats = [(featx(f), 'neg') for f in word_split(negdata)]
+    #           posfeats = [(featx(f), 'pos') for f in word_split(posdata)]
+    #This is from the article here: http://blog.chapagain.com.np/machine-learning-sentiment-analysis-text-classification-using-python-nltk/
+    #
+    #We need ot split the data into 7 feature sets 
+    #The 7 feature sets will be processed out of the features present in the data
+    #If a comment is marked as both toxic and severe-toxic it will be included in both of those feature sets
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    
