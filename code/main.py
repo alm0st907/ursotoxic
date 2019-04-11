@@ -32,6 +32,7 @@ testData = "data/test.csv"
 trainData = "data/train.csv"
 submission = "data/sample_submission.csv"
 
+stopwords = set(('over', 'under', 'below', 'more', 'most', 'no', 'not', 'only', 'such', 'few', 'so', 'too', 'very', 'just', 'any', 'once'))
 #line for debug mode flag
 debug_mode = True
 
