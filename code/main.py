@@ -107,8 +107,10 @@ def main():
             i+=1
         print()
 
+    #who doesnt love some good ol swear words?
     if debug_mode:
-        print(swearWordsList.keys)
+        for column in swearWordsList.columns:
+            print(column)
         print()
 
 if __name__ == '__main__':
