@@ -31,6 +31,7 @@ testLables = "data/test_labels.csv"
 testData = "data/test.csv"
 trainData = "data/train.csv"
 submission = "data/sample_submission.csv"
+swearWords = "data/swearWords.csv"
 
 stopwords = set(('over', 'under', 'below', 'more', 'most', 'no', 'not', 'only', 'such', 'few', 'so', 'too', 'very', 'just', 'any', 'once'))
 #line for debug mode flag
@@ -40,6 +41,7 @@ def main():
     csvTestLabels = pd.read_csv(testLables) #read in csv
     csvTraining = pd.read_csv(trainData)
     csvTest = pd.read_csv(testData)
+    swearWordsList = pd.read_csv(swearWords)
 
     IDs = csvTestLabels["id"]
     toxic_status = csvTestLabels["toxic"]
@@ -103,6 +105,10 @@ def main():
             if i==5:
                 break
             i+=1
+        print()
+
+    if debug_mode:
+        print(swearWordsList.keys)
         print()
 
 if __name__ == '__main__':
