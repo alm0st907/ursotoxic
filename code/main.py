@@ -36,18 +36,17 @@ from sklearn.svm import LinearSVC
 
 #datapaths global vars
 
-testLables = "../data/test_labels.csv"
-testData = "../data/test.csv"
-trainData = "../data/train.csv"
-submission = "../data/sample_submission.csv"
-swearWords = "../data/swearWords.csv"
+testLables = "./data/test_labels.csv"
+testData = "./data/test.csv"
+trainData = "./data/train.csv"
+submission = "./data/sample_submission.csv"
+swearWords = "./data/swearWords.csv"
 
 stopwords = set(stopwords.words('english'))
 #line for debug mode flag
 debug_mode = False
-NB_Mode = False
+NB_Mode = True
 SVM_Mode = True
-DecTree_Mode = False
 
 
 
@@ -204,7 +203,7 @@ def main():
         print("Accuracy: ", accuracy)
         print("Testing Pass Naive Bayes")
 
-        testingFeatures, unusable = AssembleTestFeatureList(parsed_label_data)
+        testingFeatures = AssembleTestFeatureList(parsed_label_data)
         #print(testingFeatures)
         testcount = 0.0
         hitcount = 0.0
@@ -216,7 +215,7 @@ def main():
         
         accuracy = hitcount/testcount
         print("Accuracy: ",accuracy)
-        print("Unusable test data", unusable)
+        # print("Unusable test data", unusable)
 
     if SVM_Mode:
         trainingFeatures = AssembleFeatureList(parsed_train_data)
@@ -243,28 +242,7 @@ def main():
         accuracy = hitcount/testcount
         print("Accuracy: ",accuracy)
 
-    if DecTree_Mode:
-        trainingFeatures = AssembleFeatureList(parsed_train_data)
-        TraintinFeaturesHalf = trainingFeatures[:trainingFeatures.count()/2]
-        classifier = MaxentClassifier.train(TraintinFeaturesHalf)
-        accuracy = nltk.classify.util.accuracy(classifier, TraintinFeaturesHalf)
-        print("Training Pass DecisionTree")
-        print("Accuracy: ", accuracy)
-        print("Testing Pass DecisionTree")
-
-        testingFeatures = AssembleTestFeatureList(parsed_label_data)
-        #print(testingFeatures)
-        testcount = 0.0
-        hitcount = 0.0
-        for features,labels in testingFeatures:
-            testcount += 1
-            result = classifier.classify(features)
-            if result == labels:
-                hitcount += 1
-        
-        accuracy = hitcount/testcount
-        print("Accuracy: ",accuracy)
-
+   
 if __name__ == '__main__':
     main()
 
@@ -278,18 +256,4 @@ if __name__ == '__main__':
     #We need ot split the data into 7 feature sets 
     #The 7 feature sets will be processed out of the features present in the data
     #If a comment is marked as both toxic and severe-toxic it will be included in both of those feature sets
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
     

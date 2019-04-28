@@ -6,6 +6,7 @@ pip3 install pandas
 pip3 install numpy
 pip3 install scipy
 pip3 install scikit-learn
+pip3 install nltk
 
 echo
 echo "trying to run python program, gitbash for windows style"
