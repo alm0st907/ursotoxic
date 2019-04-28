@@ -212,6 +212,7 @@ def main():
         trainingFeatures = AssembleFeatureList(parsed_train_data)
 
         classifier = SklearnClassifier(LinearSVC())
+        classifier = classifier.train(trainingFeatures)
         accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
         print("Training Pass Linear SVM")
         print("Accuracy: ", accuracy)
