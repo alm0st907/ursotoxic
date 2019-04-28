@@ -28,7 +28,7 @@ http://blog.chapagain.com.np/machine-learning-sentiment-analysis-text-classifica
 from sklearn import svm
 import pandas as pd
 import numpy as np
-from nltk import NaiveBayesClassifier
+from nltk import NaiveBayesClassifier, MaxentClassifier, DecisionTreeClassifier
 from nltk.classify.scikitlearn import SklearnClassifier
 import nltk.classify.util, nltk.metrics
 from nltk.corpus import stopwords
@@ -45,8 +45,10 @@ swearWords = "../data/swearWords.csv"
 stopwords = set(stopwords.words('english'))
 #line for debug mode flag
 debug_mode = False
-NB_Mode = False
-SVM_Mode = True
+NB_Mode = True
+SVM_Mode = False
+DecTree_Mode = False
+
 
 
 def word_feats(words):    
@@ -101,6 +103,10 @@ def AssembleTestFeatureList(dataset):
         featureList.append(testtuple)
 
     return featureList
+
+def split_list(a_list):
+    half = len(a_list)//2
+    return a_list[:half], a_list[half:]
 
 def main():
     csvTestLabels = pd.read_csv(testLables) #read in csv
@@ -188,9 +194,9 @@ def main():
     
     if NB_Mode:
         trainingFeatures = AssembleFeatureList(parsed_train_data)
-
-        classifier = NaiveBayesClassifier.train(trainingFeatures)
-        accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
+        trainfeat1, trainfeat2 = split_list(trainingFeatures)
+        classifier = NaiveBayesClassifier.train(trainfeat1)
+        accuracy = nltk.classify.util.accuracy(classifier, trainfeat1)
         print("Training Pass Naive Bayes")
         print("Accuracy: ", accuracy)
         print("Testing Pass Naive Bayes")
@@ -210,13 +216,37 @@ def main():
 
     if SVM_Mode:
         trainingFeatures = AssembleFeatureList(parsed_train_data)
-
+        trainfeat1, trainfeat2 = split_list(trainingFeatures)
+        trainfeat3, trainfeat4 = split_list(trainfeat1)
         classifier = SklearnClassifier(LinearSVC())
-        classifier = classifier.train(trainingFeatures)
-        accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
+        classifier = classifier.train(trainfeat3)
+        accuracy = nltk.classify.util.accuracy(classifier, trainfeat3)
         print("Training Pass Linear SVM")
         print("Accuracy: ", accuracy)
         print("Testing Pass Linear SVM")
+
+        testingFeatures = AssembleTestFeatureList(parsed_label_data)
+        testingFeatures = testingFeatures + trainfeat2 + trainfeat4
+        #print(testingFeatures)
+        testcount = 0.0
+        hitcount = 0.0
+        for features,labels in testingFeatures:
+            testcount += 1
+            result = classifier.classify(features)
+            if result == labels:
+                hitcount += 1
+        
+        accuracy = hitcount/testcount
+        print("Accuracy: ",accuracy)
+
+    if DecTree_Mode:
+        trainingFeatures = AssembleFeatureList(parsed_train_data)
+        TraintinFeaturesHalf = trainingFeatures[:trainingFeatures.count()/2]
+        classifier = MaxentClassifier.train(TraintinFeaturesHalf)
+        accuracy = nltk.classify.util.accuracy(classifier, TraintinFeaturesHalf)
+        print("Training Pass DecisionTree")
+        print("Accuracy: ", accuracy)
+        print("Testing Pass DecisionTree")
 
         testingFeatures = AssembleTestFeatureList(parsed_label_data)
         #print(testingFeatures)
