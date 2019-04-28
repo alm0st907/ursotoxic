@@ -9,6 +9,9 @@ https://scikit-learn.org/stable/modules/svm.html#svm-classification
 sci-kit svm example with visualization
 https://pythonprogramming.net/linear-svc-example-scikit-learn-svm-python/
 
+Project base
+https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data
+
 
 sci-kit naive bayes blog post with examples
 https://blog.sicara.com/naive-bayes-classifier-sklearn-python-example-tips-42d100429e44
@@ -24,18 +27,35 @@ http://blog.chapagain.com.np/machine-learning-sentiment-analysis-text-classifica
 #imports
 from sklearn import svm
 import pandas as pd
+import numpy as np
+from nltk import NaiveBayesClassifier
+import nltk.classify.util, nltk.metrics
+from nltk.corpus import stopwords
 
 #datapaths global vars
 
-testLables = "data/test_labels.csv"
-testData = "data/test.csv"
-trainData = "data/train.csv"
-submission = "data/sample_submission.csv"
-swearWords = "data/swearWords.csv"
+testLables = "../data/test_labels.csv"
+testData = "../data/test.csv"
+trainData = "../data/train.csv"
+submission = "../data/sample_submission.csv"
+swearWords = "../data/swearWords.csv"
 
-stopwords = set(('over', 'under', 'below', 'more', 'most', 'no', 'not', 'only', 'such', 'few', 'so', 'too', 'very', 'just', 'any', 'once'))
+stopwords = set(stopwords.words('english'))
 #line for debug mode flag
-debug_mode = True
+debug_mode = False
+
+def word_feats(words):    
+    return dict([(word, True) for word in words])
+
+#Filters stop words out of a list of words
+def processwords(words):
+    wordsFiltered = []
+
+    for w in words:
+        if w not in stopwords:
+            wordsFiltered.append(w)
+    return wordsFiltered
+
 
 def main():
     csvTestLabels = pd.read_csv(testLables) #read in csv
@@ -88,6 +108,8 @@ def main():
                 break
             i+=1
         print()
+        print()
+        print()
 
     if debug_mode:
         i=0
@@ -96,6 +118,8 @@ def main():
             if i==5:
                 break
             i+=1
+        print()
+        print()
         print()
 
     if debug_mode:
@@ -106,12 +130,59 @@ def main():
                 break
             i+=1
         print()
+        print()
+        print()
 
     #who doesnt love some good ol swear words?
     if debug_mode:
         for column in swearWordsList.columns:
             print(column)
         print()
+        print()
+        print()
+
+    if debug_mode:
+        i=0
+        for data in parsed_train_data:
+            print(data[1])
+            if i==5:
+                break
+            i+=1
+
+    if debug_mode:
+        i=0
+        testset = set()
+        for data in parsed_train_data:
+            words = data[1].split()
+            for word in words:
+                testset.add(word)
+            if i==5:
+                break
+            i+=1
+        print(testset)
+    
+    testlist = list()
+
+
+
+    for data in parsed_train_data:
+        i = 2
+        label = 0
+        for i in range(2,7):
+            if (data[i] == 1):
+                label = 1
+            i += 1
+            if i == 8:
+                break
+        filteredComment = data[1].split()
+        testtuple = (word_feats(filteredComment), label)
+        testlist.append(testtuple)
+
+    trainingFeatures = testlist
+
+    classifier = NaiveBayesClassifier.train(trainingFeatures)
+    accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
+    print(accuracy)
 
 if __name__ == '__main__':
     main()
