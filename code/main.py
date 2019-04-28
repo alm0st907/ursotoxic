@@ -29,8 +29,10 @@ from sklearn import svm
 import pandas as pd
 import numpy as np
 from nltk import NaiveBayesClassifier
+from nltk.classify.scikitlearn import SklearnClassifier
 import nltk.classify.util, nltk.metrics
 from nltk.corpus import stopwords
+from sklearn.svm import LinearSVC
 
 #datapaths global vars
 
@@ -43,6 +45,9 @@ swearWords = "../data/swearWords.csv"
 stopwords = set(stopwords.words('english'))
 #line for debug mode flag
 debug_mode = False
+NB_Mode = False
+SVM_Mode = True
+
 
 def word_feats(words):    
     return dict([(word, True) for word in words])
@@ -56,25 +61,54 @@ def processwords(words):
             wordsFiltered.append(w)
     return wordsFiltered
 
+#Assembles a feature list usable with NLTK for a given raw dataset
+def AssembleFeatureList(dataset):
+    featureList = list()
+    for data in dataset:
+        i = 2
+        label = 0
+        for i in range(2,7):
+            if (data[i] == 1):
+                label = 1
+            i += 1
+            if i == 8:
+                break
+        filteredComment = processwords(data[1].split())
+        testtuple = (word_feats(filteredComment), label)
+        featureList.append(testtuple)
+
+    return featureList
+
+#Assembles test feature list that accounts for data that is to be excluded in testing
+def AssembleTestFeatureList(dataset):
+    featureList = list()
+    for data in dataset:
+        i = 2
+        label = 0
+        for i in range(2,7):
+            if (data[i] == 1):
+                label = 1
+            if (data[i] == -1):
+                label = -1
+                break
+            i += 1
+            if i == 8:
+                break
+        if (label == -1):
+            continue
+        filteredComment = processwords(data[1].split())
+        testtuple = (word_feats(filteredComment), label)
+        featureList.append(testtuple)
+
+    return featureList
 
 def main():
     csvTestLabels = pd.read_csv(testLables) #read in csv
     csvTraining = pd.read_csv(trainData)
     csvTest = pd.read_csv(testData)
-    swearWordsList = pd.read_csv(swearWords)
+    #swearWordsList = pd.read_csv(swearWords)
 
-    IDs = csvTestLabels["id"]
-    toxic_status = csvTestLabels["toxic"]
-    severe_toxic_status = csvTestLabels["severe_toxic"]
-    obscene_status = csvTestLabels["obscene"]
-    threat_status = csvTestLabels["threat"]
-    insult_status = csvTestLabels["insult"]
-    identity_hate_status = csvTestLabels["identity_hate"]
-    
-    #zip data into tuple list of parsed label
-    parsed_label_data = list() #parsed out list that contains all the test label data in a list of tuples
-    for ids,tx,svtx,ob,tr,ins,idh in zip(IDs,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
-        parsed_label_data.append((ids,tx,svtx,ob,tr,ins,idh))
+
 
     IDs = csvTraining["id"]
     comments = csvTraining["comment_text"]
@@ -89,6 +123,21 @@ def main():
     parsed_train_data = list()
     for ids,comment,tx,svtx,ob,tr,ins,idh in zip(IDs,comments,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
         parsed_train_data.append((ids,comment,tx,svtx,ob,tr,ins,idh))
+
+    IDs = csvTestLabels["id"]
+    comments = csvTest["comment_text"]
+    toxic_status = csvTestLabels["toxic"]
+    severe_toxic_status = csvTestLabels["severe_toxic"]
+    obscene_status = csvTestLabels["obscene"]
+    threat_status = csvTestLabels["threat"]
+    insult_status = csvTestLabels["insult"]
+    identity_hate_status = csvTestLabels["identity_hate"]
+    
+    #zip data into tuple list of parsed label
+    parsed_label_data = list() #parsed out list that contains all the test label data in a list of tuples
+    for ids,comment,tx,svtx,ob,tr,ins,idh in zip(IDs, comments,toxic_status,severe_toxic_status,obscene_status,threat_status,insult_status,identity_hate_status):
+        parsed_label_data.append((ids,comment,tx,svtx,ob,tr,ins,idh))
+
 
     IDs = csvTest["id"]
     comments = csvTest["comment_text"]
@@ -133,56 +182,53 @@ def main():
         print()
         print()
 
-    #who doesnt love some good ol swear words?
-    if debug_mode:
-        for column in swearWordsList.columns:
-            print(column)
-        print()
-        print()
-        print()
 
-    if debug_mode:
-        i=0
-        for data in parsed_train_data:
-            print(data[1])
-            if i==5:
-                break
-            i+=1
 
-    if debug_mode:
-        i=0
-        testset = set()
-        for data in parsed_train_data:
-            words = data[1].split()
-            for word in words:
-                testset.add(word)
-            if i==5:
-                break
-            i+=1
-        print(testset)
+
     
-    testlist = list()
+    if NB_Mode:
+        trainingFeatures = AssembleFeatureList(parsed_train_data)
 
+        classifier = NaiveBayesClassifier.train(trainingFeatures)
+        accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
+        print("Training Pass Naive Bayes")
+        print("Accuracy: ", accuracy)
+        print("Testing Pass Naive Bayes")
 
+        testingFeatures = AssembleTestFeatureList(parsed_label_data)
+        #print(testingFeatures)
+        testcount = 0.0
+        hitcount = 0.0
+        for features,labels in testingFeatures:
+            testcount += 1
+            result = classifier.classify(features)
+            if result == labels:
+                hitcount += 1
+        
+        accuracy = hitcount/testcount
+        print("Accuracy: ",accuracy)
 
-    for data in parsed_train_data:
-        i = 2
-        label = 0
-        for i in range(2,7):
-            if (data[i] == 1):
-                label = 1
-            i += 1
-            if i == 8:
-                break
-        filteredComment = data[1].split()
-        testtuple = (word_feats(filteredComment), label)
-        testlist.append(testtuple)
+    if SVM_Mode:
+        trainingFeatures = AssembleFeatureList(parsed_train_data)
 
-    trainingFeatures = testlist
+        classifier = SklearnClassifier(LinearSVC())
+        accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
+        print("Training Pass Linear SVM")
+        print("Accuracy: ", accuracy)
+        print("Testing Pass Linear SVM")
 
-    classifier = NaiveBayesClassifier.train(trainingFeatures)
-    accuracy = nltk.classify.util.accuracy(classifier, trainingFeatures)
-    print(accuracy)
+        testingFeatures = AssembleTestFeatureList(parsed_label_data)
+        #print(testingFeatures)
+        testcount = 0.0
+        hitcount = 0.0
+        for features,labels in testingFeatures:
+            testcount += 1
+            result = classifier.classify(features)
+            if result == labels:
+                hitcount += 1
+        
+        accuracy = hitcount/testcount
+        print("Accuracy: ",accuracy)
 
 if __name__ == '__main__':
     main()
