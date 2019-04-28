@@ -45,8 +45,8 @@ swearWords = "../data/swearWords.csv"
 stopwords = set(stopwords.words('english'))
 #line for debug mode flag
 debug_mode = False
-NB_Mode = True
-SVM_Mode = False
+NB_Mode = False
+SVM_Mode = True
 DecTree_Mode = False
 
 
@@ -105,7 +105,7 @@ def AssembleTestFeatureList(dataset):
         testtuple = (word_feats(filteredComment), label)
         featureList.append(testtuple)
 
-    return featureList, unusable
+    return featureList
 
 def split_list(a_list):
     half = len(a_list)//2
