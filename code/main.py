@@ -80,18 +80,21 @@ def AssembleFeatureList(dataset):
         featureList.append(testtuple)
 
     return featureList
-
 #Assembles test feature list that accounts for data that is to be excluded in testing
 def AssembleTestFeatureList(dataset):
     featureList = list()
+    unusable = 0
+
     for data in dataset:
         i = 2
         label = 0
+
         for i in range(2,7):
             if (data[i] == 1):
                 label = 1
             if (data[i] == -1):
                 label = -1
+                unusable += 1
                 break
             i += 1
             if i == 8:
@@ -102,7 +105,7 @@ def AssembleTestFeatureList(dataset):
         testtuple = (word_feats(filteredComment), label)
         featureList.append(testtuple)
 
-    return featureList
+    return featureList, unusable
 
 def split_list(a_list):
     half = len(a_list)//2
@@ -201,7 +204,7 @@ def main():
         print("Accuracy: ", accuracy)
         print("Testing Pass Naive Bayes")
 
-        testingFeatures = AssembleTestFeatureList(parsed_label_data)
+        testingFeatures, unusable = AssembleTestFeatureList(parsed_label_data)
         #print(testingFeatures)
         testcount = 0.0
         hitcount = 0.0
@@ -213,6 +216,7 @@ def main():
         
         accuracy = hitcount/testcount
         print("Accuracy: ",accuracy)
+        print("Unusable test data", unusable)
 
     if SVM_Mode:
         trainingFeatures = AssembleFeatureList(parsed_train_data)
